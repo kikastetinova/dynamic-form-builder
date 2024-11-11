@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Needed to style 3rd party react-dropdown input field */
+input {
+  border: 1px solid #ccc;
+  border-radius: 0.2rem;
+  line-height: 1.6rem;
+  padding: 0.2rem 0.6rem;
+  font-size: 1rem;
+}
