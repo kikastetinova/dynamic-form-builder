@@ -1,14 +1,20 @@
-import { StrictMode } from 'react';
+import { StrictMode, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
-import TreeMatchApp from './components/page.tsx';
+import TreeMatchApp from './components/tree-match-app.tsx';
+import { TreeMatchProvider } from './services/question-context.tsx';
 
 import './index.css';
 
 const appContainer = document.getElementById('root');
+
 if (appContainer) {
   createRoot(appContainer).render(
     <StrictMode>
-      <TreeMatchApp />
+      <Suspense fallback={<div>Loading...</div>}>
+        <TreeMatchProvider>
+          <TreeMatchApp />
+        </TreeMatchProvider>
+      </Suspense>
     </StrictMode>,
   );
 }
