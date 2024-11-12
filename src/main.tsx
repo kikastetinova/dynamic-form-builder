@@ -1,7 +1,7 @@
 import { StrictMode, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import TreeMatchApp from './components/tree-match-app.tsx';
-import { TreeMatchProvider } from './services/question-context.tsx';
+import { TreeMatchProvider } from './services/context.tsx';
 
 import './index.css';
 
