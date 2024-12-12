@@ -1,12 +1,13 @@
-# Tree Match App
+# Dynamic Form Builder
 
-This is Tree Match App built with React, TypeScript, and Vite. It renders a questionarie and displays a match based on user's answers.
+This is Dynamic Form Builder App built with React, TypeScript, and Vite. 
+It renders a form based on a provided config and validates its fields on form submit.
 
 ## Setup
 
 ### Prerequisites
 
-- Node.js (version 14 or higher)
+- Node.js (version 18 or higher)
 - npm (version 6 or higher)
 
 ### Installation
@@ -14,8 +15,8 @@ This is Tree Match App built with React, TypeScript, and Vite. It renders a ques
 1. Clone the repository:
 
    ```sh
-   git clone kikastetinova/treematch
-   cd treematch
+   git clone kikastetinova/dynamic-form-builder
+   cd dynamic-form-builder
    ```
 
 2. Install dependencies:
@@ -40,16 +41,9 @@ The solution could be further improved to be more production-ready by:
 1.  better configs for eslint and prettier and vite
 2.  extracting all config files into a separate folder
 3.  including unit and e2e tests
-5.  using a library for data fetching, e.g. tanstack-query for query caching or fetch retry
-6.  improving UX by displaying a fallback component (e.g. a skeleton question component) before the initial question is loaded.
-7.  adding aria labels to buttons for better accessibility
-8.  lazy loading non-essential components, in our case MatchPage would be a candidate for that
-9.  using ErrorBoundary component for better error catching
-10. expose the application as a micro-frontend using module federation to use it as part of a larger app
-11. creating better UI components, e.g. the button in <MatchPage> and button in <AnswerOption> have the same styling, but aren't extracted to a separate component. Another alternative would be using a component-based UI library, such as MUI or Boostrap5 or daisyUI.
-12. improving UX by displaying a progress bar- that's isn't possible with the provided API as we don't know total number of questions
-13. storing user progress between page reloads, right now the progress resets of page reload
-
+4.  using a library for validation schema instead of creating a custom validation logic
+5.  using context to pass down useFormBuilder methods to deeply nested components
+6.  expose the application as a micro-frontend using module federation to use it as part of a larger app
 
 
 
