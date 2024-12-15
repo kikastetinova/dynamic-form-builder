@@ -1,4 +1,4 @@
-import { useCallback, memo } from "react";
+import { useCallback, memo, useEffect } from "react";
 import { type FormBuilderReturnType } from './use-form-builder';
 import { type FormConfig, type ErrorMessage } from './types';
 
@@ -46,13 +46,19 @@ type DynamicFormProps<T extends object> = {
 
 const DynamicForm = <T extends object>(props: DynamicFormProps<T>)  => {
   const { config, form } = props;
-  const { errors, setFieldValue, validateForm, isValid } = form;
+  const { formState, setFieldValue, validateForm } = form;
+  const { errors, isValid } = formState;
 
   const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     validateForm();
-    console.log('ON SUBMIT', isValid);
-  }, [validateForm, isValid]);
+  }, [validateForm]);
+
+  useEffect(() => {
+    if(isValid) {
+      console.log('LOGGED STATE OF A VALID FORM: ', formState);
+    }
+  }, [isValid]);
 
 
   const handleChange = useCallback((e:React.FormEvent) => {
@@ -60,7 +66,7 @@ const DynamicForm = <T extends object>(props: DynamicFormProps<T>)  => {
     const target = e.target;
 
     if (target instanceof HTMLInputElement || target instanceof HTMLSelectElement || target instanceof HTMLTextAreaElement) {
-      const eventTargetID = (target.id || target.name) as keyof T;
+      const eventTargetID = (target.name || target.id) as keyof T;
       let value: T[keyof T];
 
 

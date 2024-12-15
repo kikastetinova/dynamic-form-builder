@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { 
   type FormConfig, 
   type FieldTypeValueMap, 
@@ -21,9 +21,11 @@ export type FormBuilderReturnType<T> = {
   setFieldValue: <K extends keyof T>(id: K, value: T[K]) => void;
   validateField: (id: string) => ErrorMessage;
   validateForm: () => Record<string, ErrorMessage>;
-  fields: Record<keyof T, FieldConfigObject>;
-  errors:  Record<keyof T, ErrorMessage>;
-  isValid: boolean;
+  formState: {
+    fields: Record<keyof T, FieldConfigObject>;
+    errors:  Record<keyof T, ErrorMessage>;
+    isValid: boolean;
+  }
 }
 
 export const useFormBuilder = <T extends object>(config: FormConfig<T>): FormBuilderReturnType<T> => {
@@ -60,7 +62,7 @@ export const useFormBuilder = <T extends object>(config: FormConfig<T>): FormBui
           };
           break;
         default:
-          throw new Error(`Unknown field type: ${fieldType}`);
+          console.error(`Unknown field type: ${fieldType}`);
       }
       return state;
     }, {} as FormStateFields<T>);
@@ -82,7 +84,7 @@ export const useFormBuilder = <T extends object>(config: FormConfig<T>): FormBui
 
   const [formState, setFormState] = useState<FormState>(initialState);
 
-  const setFieldValue = <K extends keyof T>(id: K, value: T[K]) => {
+  const setFieldValue = useCallback(<K extends keyof T>(id: K, value: T[K]) => {
     if (id in formState.fields) {
       setFormState((prevState) => {
         const newFieldState = { ...prevState.fields[id], ...{value: value} };
@@ -96,9 +98,9 @@ export const useFormBuilder = <T extends object>(config: FormConfig<T>): FormBui
         return newFormState;
       });
     }
-  };
+  }, [formState]);
 
-  const validateField = (id: string): ErrorMessage => {
+  const validateField = useCallback((id: string): ErrorMessage => {
     const field = config.find((f) => f.id === id);
     if (!field) {
       throw new Error(`Can't validate an unknown field with id ${id as string}`);
@@ -136,17 +138,17 @@ export const useFormBuilder = <T extends object>(config: FormConfig<T>): FormBui
     }
 
     return null;
-  };
+  }, [config, formState]);
 
-  const validateForm = (): Record<string, ErrorMessage> => {
+  const validateForm = useCallback((): Record<string, ErrorMessage> => {
     const fields = formState.fields;
     let isFormValid = true;
 
-    const newErrors = Object.keys(fields).reduce((state, fieldID) => {
-      const id = fieldID;
+    const newErrors = Object.keys(fields).reduce((state, id) => {
       const fieldError = validateField(id);
 
-      if(fieldError == null) {
+      
+      if(fieldError !== null) {
         isFormValid = false;
       }
 
@@ -162,11 +164,11 @@ export const useFormBuilder = <T extends object>(config: FormConfig<T>): FormBui
     });
 
     return newErrors;
-  };
+  }, [formState, validateField]);
 
 
   return {
-    ...formState,
+    formState,
     setFieldValue,
     validateField,
     validateForm

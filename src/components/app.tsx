@@ -32,35 +32,23 @@ const formConfig: FormConfig<FormValues> = [
     min: 18,
     max: 100,
   },
-  // {
-  //   id: "gender",
-  //   label: "Gender",
-  //   type: "select",
-  //   options: ["Male", "Female", "Other"],
-  //   required: true,
-  // },
-  // {
-  //   id: "newsletter",
-  //   label: "Subscribe to newsletter",
-  //   type: "checkbox",
-  //   required: false,
-  // },
-  // {
-  //   id: "bio",
-  //   label: "Bio",
-  //   type: "text",
-  //   required: false,
-  //   minLength: 10,
-  //   maxLength: 300,
-  // },
-  // {
-  //   id: "rating",
-  //   label: "Rating",
-  //   type: "number",
-  //   required: true,
-  //   min: 1,
-  //   max: 5,
-  // },
+  {
+    id: "gender",
+    label: "Gender",
+    type: "select",
+    options: ["Male", "Female", "Other"],
+    required: true,
+    validate: (value: string) => {
+      return value == 'Male' ? null : 'Please select Male';
+    }
+  },
+  {
+    id: "newsletter",
+    label: "Subscribe to newsletter",
+    type: "checkbox",
+    required: false,
+  },
+
 ];
 
 
