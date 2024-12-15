@@ -5,11 +5,12 @@ export type FieldTypeValueMap = {
   checkbox: boolean;
 };
 
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 type BaseField<Values> = {
   id: keyof Values;
   label: string;
   required: boolean;
-  type: keyof FieldTypeValueMap, //TODO maybe we don't need FieldTypeValueMap anymore
+  type: keyof FieldTypeValueMap,
   validate?: (value: any) => ErrorMessage;
 };
 

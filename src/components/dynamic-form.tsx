@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, memo } from "react";
 import { type FormBuilderReturnType } from './use-form-builder';
 import { type FormConfig, type ErrorMessage } from './types';
 
@@ -10,7 +10,7 @@ type FormFieldProps = {
   options?: string[];
 };
 
-const FormField = (props: FormFieldProps) => {
+const FormField = memo((props: FormFieldProps) => {
   const { type, id, label, errorMessage, options } = props;
   let field;
   switch(type) {
@@ -37,7 +37,7 @@ const FormField = (props: FormFieldProps) => {
     {field}
     {errorMessage && <p className="text-rose-600">{errorMessage}</p>}
   </div>
-};
+});
 
 type DynamicFormProps<T extends object> = {
   config: FormConfig<T>;
@@ -51,24 +51,29 @@ const DynamicForm = <T extends object>(props: DynamicFormProps<T>)  => {
   const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     validateForm();
-  }, [validateForm]);
+    console.log('ON SUBMIT', isValid);
+  }, [validateForm, isValid]);
 
-  useEffect(()=>{
-
-  }, [isValid]);
 
   const handleChange = useCallback((e:React.FormEvent) => {
     e.preventDefault();
     const target = e.target;
 
-    
     if (target instanceof HTMLInputElement || target instanceof HTMLSelectElement || target instanceof HTMLTextAreaElement) {
-      const eventTargetID = (target.id || target.name);
-      if(target instanceof HTMLInputElement && target.type === 'checkbox') {
-        setFieldValue(eventTargetID, {checked: !target.checked});
+      const eventTargetID = (target.id || target.name) as keyof T;
+      let value: T[keyof T];
+
+
+      if (target.type === "checkbox") {
+        value = (target as HTMLInputElement).checked as T[keyof T];
+      } else if (target.type === "number") {
+        value = (parseFloat(target.value) || 0) as T[keyof T];
       } else {
-        setFieldValue(eventTargetID, {value: target.value})
+        value = target.value as T[keyof T];
       }
+    
+      setFieldValue(eventTargetID, value);
+
     }
   }, [setFieldValue]);
 
@@ -77,7 +82,7 @@ const DynamicForm = <T extends object>(props: DynamicFormProps<T>)  => {
     const options = (type === "select") ? formFieldConfig.options : undefined;
     const errorMessage = errors[id];
 
-    return <FormField type={type} id={id as string} label={label} errorMessage={errorMessage} options={options}/>
+    return <FormField key={`form-field-${id as string}`} type={type} id={id as string} label={label} errorMessage={errorMessage} options={options}/>
   });
   
   return (

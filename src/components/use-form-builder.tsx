@@ -1,64 +1,72 @@
-import { useEffect, useState } from "react";
-import { type FormConfig, type FieldTypeValueMap, type ErrorMessage } from "./types";
+import { useState } from "react";
+import { 
+  type FormConfig, 
+  type FieldTypeValueMap, 
+  type ErrorMessage,
+} from "./types";
+
+
+type FieldConfigObject = {
+  value: FieldTypeValueMap[keyof FieldTypeValueMap]
+};
+
+type FormStateItem<T, K> = {
+  [key in keyof T]: K
+};
+
+type FormStateFields<T> = FormStateItem<T, FieldConfigObject>;
+type FormStateErrors<T> = FormStateItem<T, ErrorMessage>;
 
 export type FormBuilderReturnType<T> = {
-  setFieldValue: (id: string, fieldConfig: Partial<FieldConfigObject>) => void;
-  validateField: (id: keyof T) => ErrorMessage;
+  setFieldValue: <K extends keyof T>(id: K, value: T[K]) => void;
+  validateField: (id: string) => ErrorMessage;
   validateForm: () => Record<string, ErrorMessage>;
   fields: Record<keyof T, FieldConfigObject>;
   errors:  Record<keyof T, ErrorMessage>;
   isValid: boolean;
 }
-type FieldConfigObject = {
-  checked?: boolean,
-  value: FieldTypeValueMap[keyof FieldTypeValueMap]
-};
 
 export const useFormBuilder = <T extends object>(config: FormConfig<T>): FormBuilderReturnType<T> => {
 
-  type FormStateFields = Record<keyof T, FieldConfigObject>;
-  type FormStateErrors = Record<keyof T, ErrorMessage>;
-
   type FormState = {
-    fields: FormStateFields,
-    errors: FormStateErrors,
+    fields: FormStateFields<T>,
+    errors: FormStateErrors<T>,
     isValid: boolean;
   };
 
-  const getInitialFields = (config: FormConfig<T>): FormStateFields => {
+  const getInitialFields = (config: FormConfig<T>): FormStateFields<T> => {
     return config.reduce((state, field) => {
       const fieldType = field.type;
       const id = field.id;
       switch (field.type) {
         case "text":
           state[id] = {
-            value: "",
+            value: "hey",
           };
           break;
         case "select":
           state[id] = {
-            value: field.options[0] ? field.options[0] : ""
+            value: field.options?.[0] ? field.options[0] : ""
           }
           break;
         case "number":
           state[id] = {
-            value: 0,
+            value: 1000,
           }
           break;
         case "checkbox":
           state[id] = {
-            value: "",
-            checked: false,
+            value: false,
           };
           break;
         default:
           throw new Error(`Unknown field type: ${fieldType}`);
       }
       return state;
-    }, {} as FormStateFields);
+    }, {} as FormStateFields<T>);
   };
 
-  const initialErrors: FormStateErrors = config.reduce((acc, key) => {
+  const initialErrors: FormStateErrors<T> = config.reduce((acc, key) => {
     const id = key.id as keyof T;
     acc[id] = null;
     return acc;
@@ -74,10 +82,10 @@ export const useFormBuilder = <T extends object>(config: FormConfig<T>): FormBui
 
   const [formState, setFormState] = useState<FormState>(initialState);
 
-  const setFieldValue = (id: string, fieldConfig: Partial<FieldConfigObject>) => {
+  const setFieldValue = <K extends keyof T>(id: K, value: T[K]) => {
     if (id in formState.fields) {
       setFormState((prevState) => {
-        const newFieldState = { ...prevState.fields[id as keyof T], ...fieldConfig };
+        const newFieldState = { ...prevState.fields[id], ...{value: value} };
         const newFormState = {
           ...prevState,
           fields: {
@@ -90,36 +98,41 @@ export const useFormBuilder = <T extends object>(config: FormConfig<T>): FormBui
     }
   };
 
-  const validateField = (id: keyof T): ErrorMessage => {
+  const validateField = (id: string): ErrorMessage => {
     const field = config.find((f) => f.id === id);
     if (!field) {
       throw new Error(`Can't validate an unknown field with id ${id as string}`);
     }
 
-    const value = formState.fields[id]?.value;
+    const value = formState.fields[id as keyof T]?.value;
 
     if (field.required && ((typeof value === "string" && value === "") || value === undefined || value == null)) {
       return "This field is required.";
     }
 
-    if (field.type === "text" && typeof value === "string") {
-      if (field.minLength !== undefined && value.length < field.minLength) {
-        return `Minimum length is ${field.minLength}.`;
+    if (field.type === "text") {
+      if (typeof value === "string") {
+        if (field.minLength !== undefined && value.length < field.minLength) {
+          return `Minimum length is ${field.minLength}.`;
+        }
+        if (field.maxLength !== undefined && value.length > field.maxLength) {
+          return `Maximum length is ${field.maxLength}.`;
+        }
+      } else {
+        return "Invalid value type for a text field.";
       }
-      if (field.maxLength !== undefined && value.length > field.maxLength) {
-        return `Maximum length is ${field.maxLength}.`;
-      }
-    } else if (field.type === "number" && typeof value === "number") {
-      if (field.min !== undefined && value < field.min) {
+    } else if (field.type === "number") {
+      const numericValue = typeof value === "number" ? value : parseFloat(value as string);
+      if (field.min !== undefined && numericValue < field.min) {
         return `Value must be at least ${field.min}.`;
       }
-      if (field.max !== undefined && value > field.max) {
+      if (field.max !== undefined && numericValue > field.max) {
         return `Value must not exceed ${field.max}.`;
       }
     }
 
-    if (field.validate) {
-      return field.validate(value);
+    if(field.validate) {
+      return (field.validate(value));
     }
 
     return null;
@@ -127,29 +140,26 @@ export const useFormBuilder = <T extends object>(config: FormConfig<T>): FormBui
 
   const validateForm = (): Record<string, ErrorMessage> => {
     const fields = formState.fields;
+    let isFormValid = true;
+
     const newErrors = Object.keys(fields).reduce((state, fieldID) => {
-      const id = fieldID as keyof T;
+      const id = fieldID;
       const fieldError = validateField(id);
 
-      let isFormValid = true;
       if(fieldError == null) {
         isFormValid = false;
       }
 
-      setFormState((prevState) => {
-        const newFormState = {
-          ...prevState,
-          isValid: isFormValid,
-          errors: {
-            ...prevState.errors,
-            [id]: fieldError
-          }
-        }
-        return newFormState;
-      });
+      state[id as keyof T] = fieldError;
 
       return state;
-    }, {} as Record<string, ErrorMessage>);
+    }, {} as Record<keyof T, ErrorMessage>);
+
+    setFormState({
+      ...formState,
+      isValid: isFormValid,
+      errors: newErrors
+    });
 
     return newErrors;
   };
