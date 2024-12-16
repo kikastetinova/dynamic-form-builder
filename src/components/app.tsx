@@ -1,14 +1,15 @@
 import DynamicForm from "./dynamic-form";
-import { useFormBuilder }  from './use-form-builder';
-import { type FormConfig } from "./types";
+import { useFormBuilder }  from '../hooks/use-form-builder';
+import { type FormConfig } from "../types/types";
 
 interface FormValues {
   username: string;
   age: number;
   gender: string;
   newsletter: boolean;
-  bio: string;
-  rating: number;
+  over18: string;
+  resume: string;
+  dob: string;
 };
 
 const formConfig: FormConfig<FormValues> = [
@@ -39,7 +40,7 @@ const formConfig: FormConfig<FormValues> = [
     options: ["Male", "Female", "Other"],
     required: true,
     validate: (value: string) => {
-      return value == 'Male' ? null : 'Please select Male';
+      return value == 'Female' ? null : 'Please select Female';
     }
   },
   {
@@ -48,9 +49,26 @@ const formConfig: FormConfig<FormValues> = [
     type: "checkbox",
     required: false,
   },
-
+  {
+    id: 'over18',
+    label: 'Over 18 years old?',
+    type: 'radio',
+    options: ['Yes', 'No']
+  },
+  {
+    id: 'resume',
+    label: 'Upload your resume',
+    type: 'file',
+    required: true,
+  },
+  {
+    id: 'dob',
+    label: 'Date of birth',
+    type: 'date',
+    min: '2024-12-01',
+    required: true
+  }
 ];
-
 
 const App = () => {
   const form = useFormBuilder<FormValues>(formConfig);
