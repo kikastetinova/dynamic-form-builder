@@ -9,10 +9,10 @@ interface FormValues {
   newsletter: boolean;
   over18: string;
   resume: string;
-  dob: string;
+  dob: string | Date;
 };
 
-const formConfig: FormConfig<FormValues> = [
+const formConfig: FormConfig = [
   {
     id: "username",
     label: "Username",

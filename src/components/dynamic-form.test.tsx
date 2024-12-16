@@ -28,12 +28,6 @@ describe("DynamicForm", () => {
     validateForm: mockValidateForm,
   };
 
-  interface FormValues {
-    name: string;
-    age: number;
-    dob: string;
-  };
-
   const config = [
     { id: "name", type: "text", required: true, label: "Name" },
     { id: "age", type: "number", required: true, min: 18, label: "Age" },
@@ -41,7 +35,7 @@ describe("DynamicForm", () => {
   ];
 
   it("renders form fields correctly", () => {
-    render(<DynamicForm config={config as FormConfig<FormValues>} form={mockForm} />);
+    render(<DynamicForm config={config as FormConfig} form={mockForm} />);
     expect(screen.getByLabelText("Name")).toBeInTheDocument();
     expect(screen.getByLabelText("Age")).toBeInTheDocument();
     expect(screen.getByLabelText("Date of Birth")).toBeInTheDocument();
@@ -59,7 +53,7 @@ describe("DynamicForm", () => {
     };
 
     const mockInvalidForm = { ...mockForm, formState: invalidFormState };
-    render(<DynamicForm config={config as FormConfig<FormValues>} form={mockInvalidForm} />);
+    render(<DynamicForm config={config as FormConfig} form={mockInvalidForm} />);
 
     expect(screen.getByText("This field is required.")).toBeInTheDocument();
     expect(screen.getByText("Value must be at least 18.")).toBeInTheDocument();
@@ -77,14 +71,14 @@ describe("DynamicForm", () => {
     };
 
     const mockInvalidForm = { ...mockForm, formState: invalidFormState };
-    render(<DynamicForm config={config as FormConfig<FormValues>} form={mockInvalidForm as any} />);
+    render(<DynamicForm config={config as FormConfig} form={mockInvalidForm as any} />);
 
     expect(screen.getByLabelText("Name")).toBeInTheDocument();
     expect(screen.getByLabelText("Name")).toHaveValue("5");
   });
 
   it("updates field values on change", () => {
-    render(<DynamicForm config={config as FormConfig<FormValues>} form={mockForm} />);
+    render(<DynamicForm config={config as FormConfig} form={mockForm} />);
 
     fireEvent.change(screen.getByLabelText("Name"), { target: { value: "John" } });
     fireEvent.change(screen.getByLabelText("Age"), { target: { value: "25" } });
@@ -94,7 +88,7 @@ describe("DynamicForm", () => {
   });
 
   it("handles dynamic config changes", () => {
-    const { rerender } = render(<DynamicForm config={config as FormConfig<FormValues>} form={mockForm} />);
+    const { rerender } = render(<DynamicForm config={config as FormConfig} form={mockForm} />);
 
     expect(screen.getByLabelText("Name")).toBeInTheDocument();
     expect(screen.getByLabelText("Age")).toBeInTheDocument();
@@ -103,7 +97,7 @@ describe("DynamicForm", () => {
       { id: "email", type: "text", required: true, label: "Email" },
     ];
 
-    rerender(<DynamicForm config={newConfig as FormConfig<FormValues>} form={mockForm} />);
+    rerender(<DynamicForm config={newConfig as FormConfig} form={mockForm} />);
 
     expect(screen.getByLabelText("Email")).toBeInTheDocument();
     expect(screen.queryByLabelText("Name")).not.toBeInTheDocument();
@@ -118,7 +112,7 @@ describe("DynamicForm", () => {
     const mockValidForm = { ...mockForm, formState: validFormState };
     const consoleSpy = vi.spyOn(console, "log");
 
-    render(<DynamicForm config={config as FormConfig<FormValues>} form={mockValidForm} />);
+    render(<DynamicForm config={config as FormConfig} form={mockValidForm} />);
 
     expect(consoleSpy).toHaveBeenCalledWith("LOGGED STATE OF A VALID FORM: ", validFormState);
     consoleSpy.mockRestore();

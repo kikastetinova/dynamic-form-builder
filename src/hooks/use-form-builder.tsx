@@ -15,7 +15,7 @@ type FormState<T> = {
   isValid: boolean;
 };
 
-export const useFormBuilder = <T extends object>(config: FormConfig<T>): FormBuilderReturnType<T> => {
+export const useFormBuilder = <T extends object>(config: FormConfig): FormBuilderReturnType<T> => {
 
   const initialState: FormState<T> = {
     fields: getInitialFields<T>(config),
@@ -28,7 +28,7 @@ export const useFormBuilder = <T extends object>(config: FormConfig<T>): FormBui
   const setFieldValue = useCallback(<K extends keyof T>(id: K, value: T[K]) => {
     if (id in formState.fields) {
       setFormState((prevState) => {
-        const newFieldState = { ...prevState.fields[id], ...{value: value} };
+        const newFieldState = { ...prevState.fields[id as keyof T], ...{value: value} };
         const newFormState = {
           ...prevState,
           fields: {

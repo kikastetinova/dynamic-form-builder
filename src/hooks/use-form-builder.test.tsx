@@ -5,19 +5,25 @@ import type { FormConfig } from "../types/types";
 
 describe("useFormBuilder", () => {
 
-  const config: FormConfig<{ name: string; age: number; dob: string }> = [
+  interface FormConfType {
+    "name": string,
+    "age": number,
+    "dob": string
+  };
+
+  const config: FormConfig = [
     { id: "name", type: "text", label: 'Label', required: true, minLength: 3, maxLength: 10 },
     { id: "age", type: "number", label: 'Label', required: true, min: 18, max: 60 },
     { id: "dob", type: "date", label: 'Label', required: true, min: "2000-01-01", max: "2025-12-31" },
   ];
 
   it("initializes form state correctly", () => {
-    const { result } = renderHook(() => useFormBuilder(config));
+    const { result } = renderHook(() => useFormBuilder<FormConfType>(config));
     const today = new Date().toISOString().split("T")[0];
     expect(result.current.formState.fields).toEqual({
       name: { value: "" },
       age: { value: 0 },
-      dob: { value: today }, // Assuming default value logic from `getDefaultValue`.
+      dob: { value: today },
     });
     expect(result.current.formState.errors).toEqual({
       name: null,
@@ -28,7 +34,7 @@ describe("useFormBuilder", () => {
   });
 
   it("updates field value correctly with setFieldValue", () => {
-    const { result } = renderHook(() => useFormBuilder(config));
+    const { result } = renderHook(() => useFormBuilder<FormConfType>(config));
 
     act(() => {
       result.current.setFieldValue("name", "John");
@@ -38,14 +44,14 @@ describe("useFormBuilder", () => {
   });
 
   it("validates a required field correctly", () => {
-    const { result } = renderHook(() => useFormBuilder(config));
+    const { result } = renderHook(() => useFormBuilder<FormConfType>(config));
 
     const error = result.current.validateField("name");
     expect(error).toBe("This field is required.");
   });
 
   it("validates text field length constraints", () => {
-    const { result } = renderHook(() => useFormBuilder(config));
+    const { result } = renderHook(() => useFormBuilder<FormConfType>(config));
 
     act(() => {
       result.current.setFieldValue("name", "Jo");
@@ -63,7 +69,7 @@ describe("useFormBuilder", () => {
   });
 
   it("validates number field constraints", () => {
-    const { result } = renderHook(() => useFormBuilder(config));
+    const { result } = renderHook(() => useFormBuilder<FormConfType>(config));
 
     act(() => {
       result.current.setFieldValue("age", 17);
@@ -81,7 +87,7 @@ describe("useFormBuilder", () => {
   });
 
   it("validates date field constraints", () => {
-    const { result } = renderHook(() => useFormBuilder(config));
+    const { result } = renderHook(() => useFormBuilder<FormConfType>(config));
 
     act(() => {
       result.current.setFieldValue("dob", "1999-12-31");
@@ -99,7 +105,7 @@ describe("useFormBuilder", () => {
   });
 
   it("validates the entire form and updates errors and isValid state", () => {
-    const { result } = renderHook(() => useFormBuilder(config));
+    const { result } = renderHook(() => useFormBuilder<FormConfType>(config));
 
     act(() => {
       result.current.validateForm();

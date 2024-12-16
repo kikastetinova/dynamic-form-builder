@@ -32,69 +32,69 @@ export type FormBuilderReturnType<T> = {
 };
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
-type BaseField<Values> = {
-  id: keyof Values;
+type BaseField = {
+  id: string;
   label: string;
   required?: boolean;
   type: SupportedFieldTypes,
   validate?: (value: any) => ErrorMessage;
 };
 
-export type TextField<Values> = BaseField<Values> & {
+export type TextField = BaseField & {
   type: "text";
   value?: string;
   minLength?: number;
   maxLength?: number;
 };
 
-export type NumberField<Values> = BaseField<Values> & {
+export type NumberField = BaseField & {
   type: "number";
   value?: number;
   min?: number;
   max?: number;
 };
 
-export type SelectField<Values> = BaseField<Values> & {
+export type SelectField = BaseField & {
   type: "select";
   value?: string | string[];
   options: string[];
 };
 
-export type CheckboxField<Values> = BaseField<Values> & {
+export type CheckboxField = BaseField & {
   type: "checkbox";
   value?: boolean;
 };
 
-export type RadioField<Values> = BaseField<Values> & {
+export type RadioField = BaseField & {
   type: "radio";
   value?: string;
   options: string[];
 };
 
-export type FileField<Values> = BaseField<Values> & {
+export type FileField = BaseField & {
   type: "file";
   value?: string;
 };
 
-export type DateField<Values> = BaseField<Values> & {
+export type DateField = BaseField & {
   type: "date";
   value?: string;
   min?: string;
   max?: string;
 };
 
-export type FieldConfig<Values> = 
-  | TextField<Values> 
-  | NumberField<Values> 
-  | SelectField <Values>
-  | CheckboxField<Values>
-  | RadioField<Values>
-  | FileField<Values>
-  | DateField<Values>;
+export type FieldConfig = 
+  | TextField 
+  | NumberField 
+  | SelectField 
+  | CheckboxField
+  | RadioField
+  | FileField
+  | DateField;
 
-export type FormConfig<Values> = FieldConfig<Values>[];
+export type FormConfig = FieldConfig[];
 
-export type SupportedValueTypes = FieldConfig<any>["value"];
+export type SupportedValueTypes = FieldConfig["value"];
 
 export type Errors<Values> = {
   [K in keyof Values]: string | null;

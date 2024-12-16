@@ -8,7 +8,7 @@ import { FormField } from "./form-field";
 
 
 type DynamicFormProps<T extends object> = {
-  config: FormConfig<T>;
+  config: FormConfig;
   form: FormBuilderReturnType<T>;
 };
 
@@ -54,9 +54,9 @@ const DynamicForm = <T extends object>(props: DynamicFormProps<T>)  => {
   const formFields = config.map(formFieldConfig => {
     const { id, type, label } = formFieldConfig;
     
-    const value = fields[id]?.value;
+    const value = fields[id as keyof T]?.value;
     const options = (type === "select" || type == "radio") ? formFieldConfig.options : undefined;
-    const errorMessage = errors[id];
+    const errorMessage = errors[id as keyof T];
 
     return <FormField 
       value={value} 

@@ -34,7 +34,7 @@ describe("getDefaultValue", () => {
 
 describe("getInitialFields", () => {
   it("initializes fields with the correct default values", () => {
-    const config: FormConfig<{ name: string; age: number }> = [
+    const config: FormConfig = [
       { id: "name", type: "text", label: "Name" },
       { id: "age", type: "number", label: "Age" },
     ];
@@ -56,11 +56,11 @@ describe("getInitialFields", () => {
       mySelect: { value: "" },
     };
 
-    expect(getInitialFields(config as FormConfig<{ mySelect: string }>)).toEqual(expected);
+    expect(getInitialFields(config as FormConfig)).toEqual(expected);
   });
 
   it("handles radio fields with options", () => {
-    const config: FormConfig<{ choice: string }> = [
+    const config: FormConfig = [
       { id: "choice", type: "radio", label: "Name", options: ["Yes", "No"] },
     ];
 
@@ -80,14 +80,14 @@ describe("getInitialFields", () => {
       choice: { value: "" },
     };
 
-    expect(getInitialFields(config as FormConfig<{ choice: string }>)).toEqual(expected);
+    expect(getInitialFields(config as FormConfig)).toEqual(expected);
   });
 });
 
 
 describe("getInitialErrors", () => {
   it("initializes errors with null for all fields", () => {
-    const config: FormConfig<{ name: string; age: number }> = [
+    const config: FormConfig = [
       { id: "name", type: "text", label: "Name" },
       { id: "age", type: "number", label: "Name" },
     ];

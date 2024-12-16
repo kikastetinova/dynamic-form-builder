@@ -19,15 +19,15 @@ export const getDefaultValue = (type: SupportedFieldTypes, options?: string[]) =
   return defaultValues[type] ?? "";
 };
 
-export const getInitialFields = <T,>(config: FormConfig<T>): FormStateFields<T> =>
+export const getInitialFields = <T,>(config: FormConfig): FormStateFields<T> =>
   config ? config.reduce((state, field) => {
     const options = (field.type =="select" || field.type =="radio") ? field.options : undefined;
-    const id = field.id;
+    const id = field.id as keyof T;
     state[id] = { value: getDefaultValue(field.type, options) };
     return state;
   }, {} as FormStateFields<T>) : {} as FormStateFields<T>;
 
-export const getInitialErrors = <T,>(config: FormConfig<T>):  FormStateErrors<T> =>
+export const getInitialErrors = <T,>(config: FormConfig):  FormStateErrors<T> =>
   config ? config.reduce((state, field) => {
     const id = field.id as keyof T;
     state[id] = null;
