@@ -36,14 +36,13 @@ It renders a form based on a provided config and validates its fields on form su
 
 # Notes
 
-The solution could be further improved to be more production-ready by:
+The solution could be further improved by:
 
 1.  better configs for eslint and prettier and vite
 2.  extracting all config files into a separate folder
-3.  including unit and e2e tests
-4.  using a library for validation schema instead of creating a custom validation logic
-5.  using context to pass down useFormBuilder methods to deeply nested components
-6.  expose the application as a micro-frontend using module federation to use it as part of a larger app
+3.  extend the logic to support multiselect
+4.  extend the logic to support field validation based on a value of another field
+5.  using a library for validation schema instead of creating a custom validation logic
 
 
 
