@@ -40,8 +40,8 @@ describe("getInitialFields", () => {
     ];
 
     const expected = {
-      name: { value: "" },
-      age: { value: 0 },
+      name: "",
+      age: 0,
     };
 
     expect(getInitialFields(config)).toEqual(expected);
@@ -53,7 +53,7 @@ describe("getInitialFields", () => {
     ];
 
     const expected = {
-      mySelect: { value: "" },
+      mySelect: "",
     };
 
     expect(getInitialFields(config as FormConfig)).toEqual(expected);
@@ -65,7 +65,7 @@ describe("getInitialFields", () => {
     ];
 
     const expected = {
-      choice: { value: "Yes" },
+      choice: "Yes",
     };
 
     expect(getInitialFields(config)).toEqual(expected);
@@ -77,7 +77,7 @@ describe("getInitialFields", () => {
     ];
 
     const expected = {
-      choice: { value: "" },
+      choice: "",
     };
 
     expect(getInitialFields(config as FormConfig)).toEqual(expected);

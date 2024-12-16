@@ -5,35 +5,35 @@ import {
   type FormStateErrors,
   type FormBuilderReturnType,
   type FormStateFields,
+  type NonUndefinedSupportedValueTypes
 } from "../types/types";
 import { getInitialFields, getInitialErrors } from '../utils/utils';
 
 
-type FormState<T> = {
-  fields: FormStateFields<T>,
-  errors: FormStateErrors<T>,
+type FormState = {
+  fields: FormStateFields,
+  errors: FormStateErrors,
   isValid: boolean;
 };
 
-export const useFormBuilder = <T extends object>(config: FormConfig): FormBuilderReturnType<T> => {
+export const useFormBuilder = <T extends object>(config: FormConfig): FormBuilderReturnType => {
 
-  const initialState: FormState<T> = {
-    fields: getInitialFields<T>(config),
-    errors: getInitialErrors<T>(config),
+  const initialState: FormState = {
+    fields: getInitialFields(config),
+    errors: getInitialErrors(config),
     isValid: false
   };
 
-  const [formState, setFormState] = useState<FormState<T>>(initialState);
+  const [formState, setFormState] = useState<FormState>(initialState);
 
-  const setFieldValue = useCallback(<K extends keyof T>(id: K, value: T[K]) => {
+  const setFieldValue = useCallback((id: string, value: NonUndefinedSupportedValueTypes) => {
     if (id in formState.fields) {
       setFormState((prevState) => {
-        const newFieldState = { ...prevState.fields[id as keyof T], ...{value: value} };
         const newFormState = {
           ...prevState,
           fields: {
             ...prevState.fields,
-            [id]: newFieldState,
+            [id]: value,
           }
         }
         return newFormState;
@@ -48,7 +48,7 @@ export const useFormBuilder = <T extends object>(config: FormConfig): FormBuilde
         throw new Error(`A field with id ${id} doesn't exists`);
       }
 
-      const value = formState.fields[id as keyof T]?.value;
+      const value = formState.fields[id];
       if(value === undefined) {
         throw new Error(`Field with this id doesn't exist in form state object`);
       }

@@ -1,13 +1,13 @@
 export type SupportedFieldTypes = 'text' | 'select' | 'number' | 'checkbox' | 'radio' | 'file' | 'date';
 
-// export type FieldTypeValueMap = {
-//   text: string;
-//   select: string;
-//   number: number;
-//   checkbox: boolean;
-//   radio: string;
-//   date: string;
-// };
+export type FieldTypeValueMap = {
+  text: string;
+  select: string;
+  number: number;
+  checkbox: boolean;
+  radio: string;
+  date: string;
+};
 
 export type FieldConfigObject = {
   value: SupportedValueTypes
@@ -17,16 +17,26 @@ export type FormStateItem<T, K> = {
   [key in keyof T]: K
 };
 
-export type FormStateFields<T> = FormStateItem<T, FieldConfigObject>;
-export type FormStateErrors<T> = FormStateItem<T, ErrorMessage>;
+type FormFieldState = {
+  [Field in FormConfig[number] as Field["id"]]: Field["type"] extends keyof FieldTypeValueMap
+  ? FieldTypeValueMap[Field["type"]]
+  : never; // Ensure type safety by validating 'type' against FieldTypeValueMap keys
+};
 
-export type FormBuilderReturnType<T> = {
-  setFieldValue: <K extends keyof T>(id: K, value: T[K]) => void;
+type FormErrorState = {
+  [Field in FormConfig[number] as Field["id"]]: ErrorMessage
+};
+
+export type FormStateFields = FormFieldState;
+export type FormStateErrors = FormErrorState;
+
+export type FormBuilderReturnType = {
+  setFieldValue: (id: string, value: NonUndefinedSupportedValueTypes) => void;
   validateField: (id: string) => ErrorMessage;
   validateForm: () => Record<string, ErrorMessage>;
   formState: {
-    fields: FormStateFields<T>,
-    errors:  FormStateErrors<T>,
+    fields: FormStateFields,
+    errors:  FormStateErrors,
     isValid: boolean;
   }
 };
@@ -56,7 +66,7 @@ export type NumberField = BaseField & {
 
 export type SelectField = BaseField & {
   type: "select";
-  value?: string | string[];
+  value?: string;
   options: string[];
 };
 
@@ -95,6 +105,7 @@ export type FieldConfig =
 export type FormConfig = FieldConfig[];
 
 export type SupportedValueTypes = FieldConfig["value"];
+export type NonUndefinedSupportedValueTypes = Exclude<SupportedValueTypes, undefined>;
 
 export type Errors<Values> = {
   [K in keyof Values]: string | null;

@@ -21,9 +21,9 @@ describe("useFormBuilder", () => {
     const { result } = renderHook(() => useFormBuilder<FormConfType>(config));
     const today = new Date().toISOString().split("T")[0];
     expect(result.current.formState.fields).toEqual({
-      name: { value: "" },
-      age: { value: 0 },
-      dob: { value: today },
+      name: "",
+      age: 0,
+      dob: today,
     });
     expect(result.current.formState.errors).toEqual({
       name: null,
@@ -40,7 +40,7 @@ describe("useFormBuilder", () => {
       result.current.setFieldValue("name", "John");
     });
 
-    expect(result.current.formState.fields.name.value).toBe("John");
+    expect(result.current.formState.fields.name).toBe("John");
   });
 
   it("validates a required field correctly", () => {

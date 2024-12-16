@@ -1,18 +1,19 @@
 import { useCallback, useEffect } from "react";
 import { 
   type FormConfig, 
-  type FormBuilderReturnType
+  type FormBuilderReturnType,
+  type NonUndefinedSupportedValueTypes
 } from '../types/types';
 import { FormField } from "./form-field";
 
 
 
-type DynamicFormProps<T extends object> = {
+type DynamicFormProps= {
   config: FormConfig;
-  form: FormBuilderReturnType<T>;
+  form: FormBuilderReturnType;
 };
 
-const DynamicForm = <T extends object>(props: DynamicFormProps<T>)  => {
+const DynamicForm = (props: DynamicFormProps)  => {
   const { config, form } = props;
   const { formState, setFieldValue, validateForm } = form;
   const { errors, isValid, fields } = formState;
@@ -36,15 +37,15 @@ const DynamicForm = <T extends object>(props: DynamicFormProps<T>)  => {
       target instanceof HTMLInputElement || 
       target instanceof HTMLSelectElement || 
       target instanceof HTMLTextAreaElement) {
-      const eventTargetID = (target.name || target.id) as keyof T;
-      let value: T[keyof T];
+      const eventTargetID = (target.name || target.id);
+      let value: NonUndefinedSupportedValueTypes;
 
       if (target.type === "checkbox") {
-        value = (target as HTMLInputElement).checked as T[keyof T];
+        value = (target as HTMLInputElement).checked;
       } else if (target.type === "number") {
-        value = (parseFloat(target.value) || 0) as T[keyof T];
+        value = (parseFloat(target.value) || 0);
       } else {
-        value = target.value as T[keyof T];
+        value = target.value;
       }
 
       setFieldValue(eventTargetID, value);
@@ -54,9 +55,9 @@ const DynamicForm = <T extends object>(props: DynamicFormProps<T>)  => {
   const formFields = config.map(formFieldConfig => {
     const { id, type, label } = formFieldConfig;
     
-    const value = fields[id as keyof T]?.value;
+    const value = fields[id];
     const options = (type === "select" || type == "radio") ? formFieldConfig.options : undefined;
-    const errorMessage = errors[id as keyof T];
+    const errorMessage = errors[id];
 
     return <FormField 
       value={value} 

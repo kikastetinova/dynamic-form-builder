@@ -9,12 +9,12 @@ describe("DynamicForm", () => {
   const mockValidateForm = vi.fn();
   const mockSetFieldValue = vi.fn();
 
-  const mockForm: FormBuilderReturnType<any> = {
+  const mockForm: FormBuilderReturnType = {
     formState: {
       fields: {
-        name: { value: "" },
-        age: { value: 0 },
-        dob: { value: "2000-01-01" },
+        name: "",
+        age: 0,
+        dob: "2000-01-01",
       },
       errors: {
         name: null,
@@ -63,7 +63,7 @@ describe("DynamicForm", () => {
     const invalidFormState = {
       ...mockForm.formState,
       fields: {
-        name: { value: 5 }
+        name: 5
       },
       errors: {
         

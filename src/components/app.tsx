@@ -72,7 +72,7 @@ const formConfig: FormConfig = [
 
 const App = () => {
   const form = useFormBuilder<FormValues>(formConfig);
-  return <DynamicForm<FormValues> config={formConfig} form={form}/>;
+  return <DynamicForm config={formConfig} form={form}/>;
 }
 
 export default App;
